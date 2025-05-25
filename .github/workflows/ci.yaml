@@ -1,0 +1,24 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+      - uses: actions/checkout@v3 # change to v2 if faced any error.
+
+      - name: install dependencies
+      - run: npm install -g pnpm && pnpm install
+
+      - name: Copy .env.example files
+        shell: bash
+        run: find . -type f -name ".env.example" -exec sh -c 'cp "$1" "${2}"' _ {} \;
+
+      - name: Typecheck
+      - run: pnpm typecheck
+
+      - name: Lint
+      - run: pnpm lint
