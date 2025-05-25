@@ -47,217 +47,9 @@ import {
   Sun,
 } from "lucide-react";
 import { useTheme } from "next-themes";
-
-// Sample data structure
-const driveData = {
-  "/": {
-    name: "My Drive",
-    folders: [
-      { id: "1", name: "Documents", itemCount: 12 },
-      { id: "2", name: "Photos", itemCount: 156 },
-      { id: "3", name: "Projects", itemCount: 8 },
-      { id: "4", name: "Shared", itemCount: 24 },
-    ],
-    files: [
-      {
-        id: "f1",
-        name: "Resume.pdf",
-        type: "pdf",
-        size: "2.1 MB",
-        modified: "2 days ago",
-        url: "/files/resume.pdf",
-        starred: true,
-      },
-      {
-        id: "f2",
-        name: "Presentation.pptx",
-        type: "presentation",
-        size: "5.4 MB",
-        modified: "1 week ago",
-        url: "/files/presentation.pptx",
-        starred: false,
-      },
-      {
-        id: "f3",
-        name: "Budget.xlsx",
-        type: "spreadsheet",
-        size: "1.2 MB",
-        modified: "3 days ago",
-        url: "/files/budget.xlsx",
-        starred: true,
-      },
-    ],
-  },
-  "/Documents": {
-    name: "Documents",
-    folders: [
-      { id: "5", name: "Work", itemCount: 8 },
-      { id: "6", name: "Personal", itemCount: 4 },
-    ],
-    files: [
-      {
-        id: "f4",
-        name: "Contract.pdf",
-        type: "pdf",
-        size: "890 KB",
-        modified: "1 day ago",
-        url: "/files/contract.pdf",
-        starred: false,
-      },
-      {
-        id: "f5",
-        name: "Notes.docx",
-        type: "document",
-        size: "245 KB",
-        modified: "5 days ago",
-        url: "/files/notes.docx",
-        starred: true,
-      },
-      {
-        id: "f6",
-        name: "Invoice.pdf",
-        type: "pdf",
-        size: "1.1 MB",
-        modified: "1 week ago",
-        url: "/files/invoice.pdf",
-        starred: false,
-      },
-    ],
-  },
-  "/Photos": {
-    name: "Photos",
-    folders: [
-      { id: "7", name: "Vacation 2024", itemCount: 45 },
-      { id: "8", name: "Family", itemCount: 67 },
-    ],
-    files: [
-      {
-        id: "f7",
-        name: "sunset.jpg",
-        type: "image",
-        size: "3.2 MB",
-        modified: "2 days ago",
-        url: "/images/sunset.jpg",
-        starred: true,
-      },
-      {
-        id: "f8",
-        name: "portrait.png",
-        type: "image",
-        size: "2.8 MB",
-        modified: "4 days ago",
-        url: "/images/portrait.png",
-        starred: false,
-      },
-      {
-        id: "f9",
-        name: "landscape.jpg",
-        type: "image",
-        size: "4.1 MB",
-        modified: "1 week ago",
-        url: "/images/landscape.jpg",
-        starred: false,
-      },
-    ],
-  },
-  "/Projects": {
-    name: "Projects",
-    folders: [
-      { id: "9", name: "Website Redesign", itemCount: 15 },
-      { id: "10", name: "Mobile App", itemCount: 23 },
-    ],
-    files: [
-      {
-        id: "f10",
-        name: "project-plan.pdf",
-        type: "pdf",
-        size: "1.5 MB",
-        modified: "3 days ago",
-        url: "/files/project-plan.pdf",
-        starred: false,
-      },
-      {
-        id: "f11",
-        name: "wireframes.fig",
-        type: "design",
-        size: "12.3 MB",
-        modified: "1 day ago",
-        url: "/files/wireframes.fig",
-        starred: true,
-      },
-    ],
-  },
-};
-
-// Additional data for special sections
-const sharedData = {
-  folders: [
-    {
-      id: "s1",
-      name: "Team Documents",
-      itemCount: 15,
-      owner: "john@company.com",
-    },
-    {
-      id: "s2",
-      name: "Marketing Assets",
-      itemCount: 32,
-      owner: "sarah@company.com",
-    },
-  ],
-  files: [
-    {
-      id: "sf1",
-      name: "Shared Presentation.pptx",
-      type: "presentation",
-      size: "8.2 MB",
-      modified: "1 day ago",
-      url: "/files/shared-presentation.pptx",
-      owner: "mike@company.com",
-      starred: false,
-    },
-    {
-      id: "sf2",
-      name: "Team Photo.jpg",
-      type: "image",
-      size: "4.5 MB",
-      modified: "3 days ago",
-      url: "/images/team-photo.jpg",
-      owner: "lisa@company.com",
-      starred: true,
-    },
-  ],
-};
-
-const trashData = {
-  folders: [
-    { id: "t1", name: "Old Projects", itemCount: 5, deletedDate: "2 days ago" },
-  ],
-  files: [
-    {
-      id: "tf1",
-      name: "Old Resume.pdf",
-      type: "pdf",
-      size: "1.8 MB",
-      modified: "2 weeks ago",
-      url: "/files/old-resume.pdf",
-      deletedDate: "1 week ago",
-      starred: false,
-    },
-    {
-      id: "tf2",
-      name: "Draft Document.docx",
-      type: "document",
-      size: "567 KB",
-      modified: "1 month ago",
-      url: "/files/draft-document.docx",
-      deletedDate: "3 days ago",
-      starred: false,
-    },
-  ],
-};
-
-type Section = "my-drive" | "shared" | "recent" | "starred" | "trash";
+import type { IFolder } from "@/types";
+import { files, folders, type Section } from "@/constants";
+import { getRecentFiles, getStarredFiles } from "@/lib/utils";
 
 const getFileIcon = (type: string) => {
   switch (type) {
@@ -283,39 +75,6 @@ const getFileIcon = (type: string) => {
   }
 };
 
-const getAllFiles = () => {
-  const allFiles = [];
-  for (const path in driveData) {
-    const data = driveData[path as keyof typeof driveData];
-    allFiles.push(...data.files.map((file) => ({ ...file, path })));
-  }
-  return allFiles;
-};
-
-const getStarredFiles = () => {
-  return getAllFiles().filter((file) => file.starred);
-};
-
-const getRecentFiles = () => {
-  const allFiles = getAllFiles();
-  // Sort by modified date (most recent first)
-  return allFiles
-    .sort((a, b) => {
-      const dateA = new Date(
-        a.modified.includes("day")
-          ? Date.now() - Number.parseInt(a.modified) * 24 * 60 * 60 * 1000
-          : Date.now(),
-      );
-      const dateB = new Date(
-        b.modified.includes("day")
-          ? Date.now() - Number.parseInt(b.modified) * 24 * 60 * 60 * 1000
-          : Date.now(),
-      );
-      return dateB.getTime() - dateA.getTime();
-    })
-    .slice(0, 10); // Show only 10 most recent
-};
-
 export default function GoogleDriveClone() {
   const [currentPath, setCurrentPath] = useState("/");
   const [currentSection, setCurrentSection] = useState<Section>("my-drive");
@@ -326,27 +85,59 @@ export default function GoogleDriveClone() {
   const getCurrentData = () => {
     switch (currentSection) {
       case "my-drive":
-        return (
-          driveData[currentPath as keyof typeof driveData] || driveData["/"]
-        );
+        return {
+          folders: folders.filter((folder) => folder.section === "my-drive"),
+          files: files.filter((file) => {
+            const parentFolder: IFolder = folders[file.parentId];
+
+            if (parentFolder.section === "my-drive") return true;
+            else return false;
+          }),
+        };
+
       case "shared":
         return {
-          name: "Shared with me",
-          folders: sharedData.folders,
-          files: sharedData.files,
+          folders: folders.filter((folder) => folder.section === "shared"),
+          files: files.filter((file) => {
+            const parentFolder: IFolder = folders[file.parentId];
+
+            if (parentFolder.section === "shared") return true;
+            else return false;
+          }),
         };
+
       case "recent":
-        return { name: "Recent", folders: [], files: getRecentFiles() };
+        return {
+          folders: folders.filter((folder) => folder.section === "recent"),
+          files: getRecentFiles(),
+        };
+
       case "starred":
-        return { name: "Starred", folders: [], files: getStarredFiles() };
+        return {
+          folders: folders.filter((folder) => folder.section === "starred"),
+          files: getStarredFiles(),
+        };
+
       case "trash":
         return {
-          name: "Trash",
-          folders: trashData.folders,
-          files: trashData.files,
+          folders: folders.filter((folder) => folder.section === "trash"),
+          files: files.filter((file) => {
+            const parentFolder: IFolder = folders[file.parentId];
+
+            if (parentFolder.section === "trash") return true;
+            else return false;
+          }),
         };
       default:
-        return driveData["/"];
+        return {
+          folders: folders.filter((folder) => folder.section === "my-drive"),
+          files: files.filter((file) => {
+            const parentFolder: IFolder = folders[file.parentId];
+
+            if (parentFolder.section === "my-drive") return true;
+            else return false;
+          }),
+        };
     }
   };
 
@@ -358,7 +149,7 @@ export default function GoogleDriveClone() {
 
     const newPath =
       currentPath === "/" ? `/${folderName}` : `${currentPath}/${folderName}`;
-    if (driveData[newPath as keyof typeof driveData]) {
+    if (folders[newPath as keyof typeof folders]) {
       setCurrentPath(newPath);
     }
   };
@@ -384,7 +175,7 @@ export default function GoogleDriveClone() {
   const getSectionTitle = () => {
     switch (currentSection) {
       case "my-drive":
-        return currentData.name;
+        return "My Drive";
       case "shared":
         return "Shared with me";
       case "recent":
