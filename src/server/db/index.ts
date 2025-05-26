@@ -1,35 +1,44 @@
-import { createClient, type Client } from "@libsql/client";
-import { drizzle } from "drizzle-orm/libsql";
+import { drizzle } from "drizzle-orm/singlestore";
+import { createPool, type Pool } from "mysql2/promise";
 
 import { env } from "@/env";
 import * as schema from "./schema";
-import { defineConfig } from "drizzle-kit";
 
-/**
- * Cache the database connection in development. This avoids creating a new connection on every HMR
- * update.
- */
 const globalForDb = globalThis as unknown as {
-  client: Client | undefined;
+  conn: Pool | undefined;
 };
 
 const conn =
-  globalForDb.client ??
-  createClient({
-    // url: `${process.env.DATABASE_HOST!}://${process.env.DATABASE_USER!}:${process
-    //   .env
-    //   .DATABASE_PASSWORD!}@${process.env.DATABASE_NAME!}:${process.env.DATABASE_PORT!}`,
-    host: process.env.DATABASE_HOST!,
-    user: process.env.DATABASE_USER!,
-    password: process.env.DATABASE_PASSWORD!,
-    port: process.env.DATABASE_PORT!,
-    database: process.env.DATABASE_NAME!,
+  globalForDb.conn ??
+  createPool({
+    host: env.DATABASE_HOST,
+    port: env.DATABASE_PORT,
+    user: env.DATABASE_USER,
+    password: env.DATABASE_PASSWORD,
+    database: env.DATABASE_NAME,
     ssl: {},
     maxIdle: 0,
   });
+if (env.NODE_ENV !== "production") globalForDb.conn = conn;
 
-export const client =
-  globalForDb.client ?? createClient({ url: env.DATABASE_URL });
-if (env.NODE_ENV !== "production") globalForDb.client = client;
+conn.addListener("error", (err) => {
+  console.error("Database connection error:", err);
+});
 
-export const db = drizzle(client, { schema });
+export const db = drizzle(conn, { schema });
+
+//! working ai code
+/* const poolConnection = mysql.createPool({
+  host: process.env.DATABASE_HOST,
+  user: process.env.DATABASE_USER,
+  password: process.env.DATABASE_PASSWORD,
+  database: process.env.DATABASE_NAME,
+  ssl: {},
+});
+
+// Create drizzle instance with correct type configuration
+export const db = drizzle(poolConnection, {
+  mode: "default",
+  schema: schema,
+});
+ */

@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -47,9 +47,10 @@ import {
   Sun,
 } from "lucide-react";
 import { useTheme } from "next-themes";
-import type { IFolder } from "@/types";
+import type { IFile, IFolder } from "@/types";
 import { files, folders, type Section } from "@/constants";
 import { getRecentFiles, getStarredFiles } from "@/lib/utils";
+import { getFiles, getFolder } from "actions";
 
 const getFileIcon = (type: string) => {
   switch (type) {
@@ -82,13 +83,57 @@ export default function GoogleDriveClone() {
   const [searchQuery, setSearchQuery] = useState("");
   const { theme, setTheme } = useTheme();
 
+  const [folders, setFolders] = useState<IFolder[] | null>(null);
+  const [files, setFiles] = useState<IFile[] | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const getFetchedFolders = async () => {
+    const folders = await getFolder();
+    return folders?.data || [];
+  };
+
+  const getFetchedFiles = async () => {
+    const files = await getFiles();
+    return files?.data || [];
+  };
+
+  useEffect(() => {
+    try {
+      setIsLoading(true);
+      const fetchData = async () => {
+        const fetchedFiles = await getFetchedFiles();
+        setFolders(fetchedFiles);
+
+        console.log("Fetched files:", fetchedFiles);
+      };
+
+      const fetchFolders = async () => {
+        const fetchedFolders = await getFetchedFolders();
+        setFiles(fetchedFolders);
+
+        console.log("Fetched folders:", fetchedFolders);
+      };
+
+      fetchFolders();
+      fetchData();
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const getCurrentData = () => {
+    if (isLoading || !folders || !files) {
+      return { folders: [], files: [] };
+    }
+
     switch (currentSection) {
       case "my-drive":
         return {
-          folders: folders.filter((folder) => folder.section === "my-drive"),
-          files: files.filter((file) => {
-            const parentFolder: IFolder = folders[file.parentId];
+          folders: folders?.filter((folder) => folder.section === "my-drive"),
+          files: files?.filter((file) => {
+            const parentFolder: IFolder = folders[file?.parentId];
 
             if (parentFolder.section === "my-drive") return true;
             else return false;
@@ -97,8 +142,8 @@ export default function GoogleDriveClone() {
 
       case "shared":
         return {
-          folders: folders.filter((folder) => folder.section === "shared"),
-          files: files.filter((file) => {
+          folders: folders?.filter((folder) => folder.section === "shared"),
+          files: files?.filter((file) => {
             const parentFolder: IFolder = folders[file.parentId];
 
             if (parentFolder.section === "shared") return true;
@@ -108,20 +153,20 @@ export default function GoogleDriveClone() {
 
       case "recent":
         return {
-          folders: folders.filter((folder) => folder.section === "recent"),
+          folders: folders?.filter((folder) => folder.section === "recent"),
           files: getRecentFiles(),
         };
 
       case "starred":
         return {
-          folders: folders.filter((folder) => folder.section === "starred"),
+          folders: folders?.filter((folder) => folder.section === "starred"),
           files: getStarredFiles(),
         };
 
       case "trash":
         return {
-          folders: folders.filter((folder) => folder.section === "trash"),
-          files: files.filter((file) => {
+          folders: folders?.filter((folder) => folder.section === "trash"),
+          files: files?.filter((file) => {
             const parentFolder: IFolder = folders[file.parentId];
 
             if (parentFolder.section === "trash") return true;
@@ -130,8 +175,8 @@ export default function GoogleDriveClone() {
         };
       default:
         return {
-          folders: folders.filter((folder) => folder.section === "my-drive"),
-          files: files.filter((file) => {
+          folders: folders?.filter((folder) => folder.section === "my-drive"),
+          files: files?.filter((file) => {
             const parentFolder: IFolder = folders[file.parentId];
 
             if (parentFolder.section === "my-drive") return true;
@@ -419,9 +464,9 @@ export default function GoogleDriveClone() {
             {viewMode === "grid" ? (
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
                 {/* Folders */}
-                {currentData.folders.map((folder) => (
+                {currentData.folders?.map((folder) => (
                   <div
-                    key={folder.id}
+                    key={folder.folder_id}
                     className="group cursor-pointer"
                     onClick={() => navigateToFolder(folder.name)}
                   >
@@ -445,8 +490,8 @@ export default function GoogleDriveClone() {
                 ))}
 
                 {/* Files */}
-                {currentData.files.map((file) => (
-                  <div key={file.id} className="group">
+                {currentData.files?.map((file) => (
+                  <div key={file.file_id} className="group">
                     <div className="relative">
                       <a
                         href={file.url}
@@ -491,14 +536,14 @@ export default function GoogleDriveClone() {
                           {currentSection === "trash" ? (
                             <>
                               <DropdownMenuItem
-                                onClick={() => restoreFromTrash(file.id)}
+                                onClick={() => restoreFromTrash(file.file_id)}
                               >
                                 <Upload className="mr-2 h-4 w-4" />
                                 Restore
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 className="text-red-600"
-                                onClick={() => permanentlyDelete(file.id)}
+                                onClick={() => permanentlyDelete(file.file_id)}
                               >
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 Delete forever
@@ -515,7 +560,7 @@ export default function GoogleDriveClone() {
                                 Download
                               </DropdownMenuItem>
                               <DropdownMenuItem
-                                onClick={() => toggleStarred(file.id)}
+                                onClick={() => toggleStarred(file.file_id)}
                               >
                                 <Star className="mr-2 h-4 w-4" />
                                 {file.starred
@@ -551,9 +596,9 @@ export default function GoogleDriveClone() {
                 </div>
 
                 {/* Folders */}
-                {currentData.folders.map((folder) => (
+                {currentData.folders?.map((folder) => (
                   <div
-                    key={folder.id}
+                    key={folder.folder_id}
                     className="group grid cursor-pointer grid-cols-12 gap-4 rounded-lg px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800"
                     onClick={() => navigateToFolder(folder.name)}
                   >
@@ -580,9 +625,9 @@ export default function GoogleDriveClone() {
                 ))}
 
                 {/* Files */}
-                {currentData.files.map((file) => (
+                {currentData.files?.map((file) => (
                   <div
-                    key={file.id}
+                    key={file.file_id}
                     className="group grid grid-cols-12 gap-4 rounded-lg px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800"
                   >
                     <div className="col-span-6 flex items-center gap-3">
@@ -619,8 +664,8 @@ export default function GoogleDriveClone() {
               </div>
             )}
 
-            {currentData.folders.length === 0 &&
-              currentData.files.length === 0 && (
+            {currentData.folders?.length === 0 &&
+              currentData.files?.length === 0 && (
                 <div className="py-12 text-center">
                   {currentSection === "starred" && (
                     <>

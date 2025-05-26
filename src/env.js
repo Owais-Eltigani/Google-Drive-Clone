@@ -12,6 +12,7 @@ export const env = createEnv({
       .enum(["development", "test", "production"])
       .default("development"),
 
+    DATABASE_URL: z.string(),
     DATABASE_PASSWORD: z.string(),
     DATABASE_USER: z.string(),
     DATABASE_HOST: z.string(),

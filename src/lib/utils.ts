@@ -1,5 +1,6 @@
-import { FileText, ImageIcon, Video, Music, Archive } from "lucide-react"; // Ensure you have these icons installed
-import { files } from "@/constants";
+import { files, folders } from "@/constants";
+import { db } from "@/server/db";
+import { files_schema, folders_schema } from "@/server/db/schema";
 import type { IFile } from "@/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";

@@ -1,5 +1,5 @@
 export interface IFile {
-  id: string;
+  file_id: string;
   name: string;
   type: string; // e.g., "pdf", "image", "video", etc.
   size: string; // e.g., "2.1 MB"
@@ -10,7 +10,7 @@ export interface IFile {
 }
 
 export interface IFolder {
-  id: string;
+  folder_id: string;
   name: string;
   itemCount: number; // Number of items in the folder
   parentId: string; // Optional parent ID for nested folders
