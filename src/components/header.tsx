@@ -2,6 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  UserButton,
+} from "@clerk/nextjs";
 import { Search, Settings, HelpCircle, Cloud, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -52,8 +59,15 @@ export function DriveHeader({ searchQuery, onSearchChange }: DriveHeaderProps) {
           <Moon className="absolute h-5 w-5 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
           <span className="sr-only">Toggle theme</span>
         </Button>
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600">
-          <span className="text-sm font-medium text-white">U</span>
+        <div className="hover:pointer flex h-10 w-14 items-center justify-center rounded-full bg-blue-600">
+          <span className="text-sm font-medium text-white">
+            <SignedOut>
+              <SignInButton />
+            </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+          </span>
         </div>
       </div>
     </header>
