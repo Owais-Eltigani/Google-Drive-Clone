@@ -97,22 +97,23 @@ export default function GoogleDriveClone() {
     return files?.data || [];
   };
 
+  const fetchData = async () => {
+    const fetchedFiles = await getFetchedFiles();
+    setFiles(fetchedFiles);
+
+    console.log("Fetched files:", fetchedFiles);
+  };
+
+  const fetchFolders = async () => {
+    const fetchedFolders = await getFetchedFolders();
+    setFolders(fetchedFolders);
+
+    console.log("Fetched folders:", fetchedFolders);
+  };
+
   useEffect(() => {
     try {
       setIsLoading(true);
-      const fetchData = async () => {
-        const fetchedFiles = await getFetchedFiles();
-        setFolders(fetchedFiles);
-
-        console.log("Fetched files:", fetchedFiles);
-      };
-
-      const fetchFolders = async () => {
-        const fetchedFolders = await getFetchedFolders();
-        setFiles(fetchedFolders);
-
-        console.log("Fetched folders:", fetchedFolders);
-      };
 
       fetchFolders();
       fetchData();
@@ -173,20 +174,9 @@ export default function GoogleDriveClone() {
             else return false;
           }),
         };
-      default:
-        return {
-          folders: folders?.filter((folder) => folder.section === "my-drive"),
-          files: files?.filter((file) => {
-            const parentFolder: IFolder = folders[file.parentId];
-
-            if (parentFolder.section === "my-drive") return true;
-            else return false;
-          }),
-        };
     }
   };
 
-  const currentData = getCurrentData();
   const pathSegments = currentPath.split("/").filter(Boolean);
 
   const navigateToFolder = (folderName: string) => {
@@ -246,6 +236,8 @@ export default function GoogleDriveClone() {
   const permanentlyDelete = (itemId: string) => {
     console.log(`Permanently delete item: ${itemId}`);
   };
+
+  const currentData = getCurrentData();
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
@@ -506,7 +498,7 @@ export default function GoogleDriveClone() {
                           )}
                         </div>
                         <span className="mt-2 text-center text-sm text-gray-700 group-hover:text-blue-600 dark:text-gray-300">
-                          {file.name}
+                          {file.filename}
                         </span>
                         <span className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                           {file.size}

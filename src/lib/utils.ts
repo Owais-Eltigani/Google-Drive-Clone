@@ -1,5 +1,4 @@
 import { files, folders } from "@/constants";
-import { db } from "@/server/db";
 import { files_schema, folders_schema } from "@/server/db/schema";
 import type { IFile } from "@/types";
 import { clsx, type ClassValue } from "clsx";

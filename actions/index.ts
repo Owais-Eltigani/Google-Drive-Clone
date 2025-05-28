@@ -3,9 +3,7 @@
 import { files, folders } from "@/constants";
 import { db } from "@/server/db";
 import { files_schema, folders_schema } from "@/server/db/schema";
-// import { files_schema, folders_schema, users_tables } from "@/server/db/schema";
 
-// filepath: [index.ts](http://_vscodecontentref_/0)
 export const seedingFunction = async () => {
   // Helper function to convert size strings to bytes
   const convertSize = (size: string): number => {

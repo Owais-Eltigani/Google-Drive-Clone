@@ -1,6 +1,6 @@
 export interface IFile {
   file_id: string;
-  name: string;
+  filename: string;
   type: string; // e.g., "pdf", "image", "video", etc.
   size: string; // e.g., "2.1 MB"
   parentId: string; // For files in folders  //TODO add parent ID for files in folders
