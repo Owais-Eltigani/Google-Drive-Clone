@@ -79,7 +79,7 @@ export type Section = "my-drive" | "shared" | "recent" | "starred" | "trash";
 export const files: IFile[] = [
   {
     file_id: "f1",
-    name: "Resume.pdf",
+    filename: "Resume.pdf",
     type: "pdf",
     size: "2.1 MB",
     modified: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
@@ -89,7 +89,7 @@ export const files: IFile[] = [
   },
   {
     file_id: "f2",
-    name: "Presentation.pptx",
+    filename: "Presentation.pptx",
     type: "presentation",
     size: "5.4 MB",
     modified: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week ago
@@ -99,7 +99,7 @@ export const files: IFile[] = [
   },
   {
     file_id: "f3",
-    name: "Budget.xlsx",
+    filename: "Budget.xlsx",
     type: "spreadsheet",
     size: "1.2 MB",
     modified: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
@@ -109,7 +109,7 @@ export const files: IFile[] = [
   },
   {
     file_id: "f4",
-    name: "Contract.pdf",
+    filename: "Contract.pdf",
     type: "pdf",
     size: "890 KB",
     modified: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
@@ -119,7 +119,7 @@ export const files: IFile[] = [
   },
   {
     file_id: "f5",
-    name: "Notes.docx",
+    filename: "Notes.docx",
     type: "document",
     size: "245 KB",
     modified: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
@@ -129,7 +129,7 @@ export const files: IFile[] = [
   },
   {
     file_id: "f6",
-    name: "Invoice.pdf",
+    filename: "Invoice.pdf",
     type: "pdf",
     size: "1.1 MB",
     modified: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week ago
@@ -139,7 +139,7 @@ export const files: IFile[] = [
   },
   {
     file_id: "f7",
-    name: "sunset.jpg",
+    filename: "sunset.jpg",
     type: "image",
     size: "3.2 MB",
     modified: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
@@ -149,7 +149,7 @@ export const files: IFile[] = [
   },
   {
     file_id: "f8",
-    name: "portrait.png",
+    filename: "portrait.png",
     type: "image",
     size: "2.8 MB",
     modified: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), // 4 days ago
@@ -159,7 +159,7 @@ export const files: IFile[] = [
   },
   {
     file_id: "f9",
-    name: "landscape.jpg",
+    filename: "landscape.jpg",
     type: "image",
     size: "4.1 MB",
     modified: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week ago
@@ -169,7 +169,7 @@ export const files: IFile[] = [
   },
   {
     file_id: "f10",
-    name: "project-plan.pdf",
+    filename: "project-plan.pdf",
     type: "pdf",
     size: "1.5 MB",
     modified: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
@@ -179,7 +179,7 @@ export const files: IFile[] = [
   },
   {
     file_id: "f11",
-    name: "wireframes.fig",
+    filename: "wireframes.fig",
     type: "design",
     size: "12.3 MB",
     modified: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
@@ -189,7 +189,7 @@ export const files: IFile[] = [
   },
   {
     file_id: "sf1",
-    name: "Shared Presentation.pptx",
+    filename: "Shared Presentation.pptx",
     type: "presentation",
     size: "8.2 MB",
     modified: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
@@ -199,7 +199,7 @@ export const files: IFile[] = [
   },
   {
     file_id: "sf2",
-    name: "Team Photo.jpg",
+    filename: "Team Photo.jpg",
     type: "image",
     size: "4.5 MB",
     modified: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago

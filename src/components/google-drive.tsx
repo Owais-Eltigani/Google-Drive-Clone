@@ -52,7 +52,7 @@ import { files, folders, type Section } from "@/constants";
 import { getRecentFiles, getStarredFiles } from "@/lib/utils";
 import { getFiles, getFolder } from "actions";
 
-const getFileIcon = (type: string) => {
+export const getFileIcon = (type: string) => {
   switch (type) {
     case "pdf":
     case "document":
