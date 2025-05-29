@@ -11,12 +11,14 @@ import { DriveToolbar } from "@/components/toolbar";
 import { FileGridView } from "@/components/grid-view";
 import { FileListView } from "@/components/list-view";
 import { EmptyState } from "@/components/empty-state";
+import { getFiles, getFolder } from "actions";
+import { get } from "http";
 
 export default function GoogleDriveClone() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
-  const [folders, setFolders] = useState<IFolder[] | null>(null);
-  const [files, setFiles] = useState<IFile[] | null>(null);
+  const [folders, setFolders] = useState<IFolder[]>(null);
+  const [files, setFiles] = useState<IFile[]>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -27,13 +29,39 @@ export default function GoogleDriveClone() {
     handleSectionChange,
   } = useDriveNavigation();
 
+  const getFolderFromDB = async () => {
+    const foldersDate: IFolder[] = (await getFolder()).data;
+
+    if (!foldersDate) {
+      console.error("No folders found in the database");
+      return;
+    }
+
+    setFolders(foldersDate);
+    console.log("Fetched folders:", foldersDate);
+  };
+
+  const getFilesFromDB = async () => {
+    const filesDate = (await getFiles()).data;
+    setFiles(filesDate);
+    console.log("Fetched files:", filesDate);
+  };
+
   useEffect(() => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setFolders(mockFolders);
-      setFiles(mockFiles);
-      setIsLoading(false);
-    }, 500);
+    const fetchData = async () => {
+      setIsLoading(true);
+
+      try {
+        await getFilesFromDB();
+        await getFolderFromDB();
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   // Handle browser navigation

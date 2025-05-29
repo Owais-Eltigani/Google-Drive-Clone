@@ -26,19 +26,3 @@ conn.addListener("error", (err) => {
 });
 
 export const db = drizzle(conn, { schema });
-
-//! working ai code
-/* const poolConnection = mysql.createPool({
-  host: process.env.DATABASE_HOST,
-  user: process.env.DATABASE_USER,
-  password: process.env.DATABASE_PASSWORD,
-  database: process.env.DATABASE_NAME,
-  ssl: {},
-});
-
-// Create drizzle instance with correct type configuration
-export const db = drizzle(poolConnection, {
-  mode: "default",
-  schema: schema,
-});
- */

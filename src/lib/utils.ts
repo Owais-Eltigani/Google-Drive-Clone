@@ -64,6 +64,10 @@ export function getCurrentData(
   folders: IFolder[],
   files: IFile[],
 ): { folders: IFolder[]; files: IFile[] } {
+  if (!folders || !files) {
+    return { folders: [], files: [] };
+  }
+
   switch (section) {
     case "my-drive":
       const currentFolders = folders?.filter(

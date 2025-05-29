@@ -19,6 +19,8 @@ import {
   Trash2,
 } from "lucide-react";
 import type { Section } from "../constants";
+import { UploadButton } from "@uploadthing/react";
+import type { OurFileRouter } from "@/app/api/uploadthing/core";
 
 interface DriveSidebarProps {
   currentSection: Section;
@@ -46,7 +48,10 @@ export function DriveSidebar({
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Upload className="mr-2 h-4 w-4" />
-              File upload
+              <UploadButton<
+                OurFileRouter,
+                "imageUploader"
+              > endpoint="imageUploader" />
             </DropdownMenuItem>
             <DropdownMenuItem>
               <FileText className="mr-2 h-4 w-4" />

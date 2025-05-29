@@ -1,15 +1,6 @@
-import { boolean } from "drizzle-orm/gel-core";
-import { date } from "drizzle-orm/mysql-core";
-import {
-  int,
-  text,
-  singlestoreTableCreator,
-  bigint,
-} from "drizzle-orm/singlestore-core";
-
-export const createTable = singlestoreTableCreator(
-  (name) => `db_owais_52cdd_${name}`,
-);
+import { boolean, date, int, text, bigint } from "drizzle-orm/singlestore-core";
+import { db } from "./index";
+import { createTable } from "./createTable";
 
 export const files_schema = createTable("files", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
@@ -26,69 +17,51 @@ export const files_schema = createTable("files", {
 export const folders_schema = createTable("folders", {
   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
   name: text("name").notNull(),
-  parentId: text("parentId").notNull(),
-  itemCount: bigint("itemCount", { mode: "number" }).notNull(),
+  parentId: bigint("parentId", { mode: "number" }).notNull(),
+  itemCount: int("itemCount").notNull(),
   section: text("section").notNull(),
   folder_id: text("folder_id").notNull(),
 });
 
-// export type DB_FolderType = typeof folders_table.$inferSelect;
-// Create table with prefix for SingleStore
-// export const createTable = singlestoreTableCreator(
-//   (name) => `db_owais_52cdd_${name}`,
-// );
+//? uploadThings methods
 
-// export const files_schema = createTable("files", {
-//   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-//   url: text("url").notNull(),
-//   parentId: bigint("parentId", { mode: "number" }).notNull(),
-//   type: text("type").notNull(),
-//   size: int("size").notNull(),
-//   modified: date("modified").notNull(),
-//   starred: boolean("starred").notNull(),
-//   filename: text("filename").notNull(),
-// });
+export const uploadFile = async (input: {
+  file: {
+    file_id: string;
+    filename: string;
+    type: string; // e.g., "pdf", "image", "video", etc.
+    size: string; // e.g., "2.1 MB"
+    parentId: string; // For files in folders  //TODO add parent ID for files in folders
+    url: string; // URL to access the file
+    modified: string; // Last modified date
+    starred: boolean; // Whether t
+  };
+  userId: string;
+}) => {
+  return await db.insert(files_schema).values(input);
+};
 
-// export const folders_schema = createTable("folders", {
-//   id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-//   name: text("name").notNull(),
-//   parentId: bigint("parentId", { mode: "number" }),
-//   itemCount: int("itemCount").notNull(),
-//   section: text("section").notNull(),
-// });
-
-//! theo code
-// export const createTable = singlestoreTableCreator(
-//   (name) => `db_owais_52cdd_${name}`,
-// );
-
-// export const folders_schema = createTable(
-//   "folders",
-//   {
-//     id: bigint("id", { mode: "bigint" }).primaryKey().autoincrement(),
-//     name: text("name"),
-//     parentId: bigint("parentId", { mode: "number", unsigned: true }),
-//     itemCount: int("itemCount"),
-//     section: text("section"),
-//   },
-//   // (table) => {
-//   //   return [index("parent_index").on(table.parentId)];
-//   // },
-// );
-
-// export const files_schema = createTable(
-//   "files",
-//   {
-//     id: bigint("id", { mode: "bigint" }).primaryKey().autoincrement(),
-//     url: text("url").notNull(),
-//     parentId: bigint("parentId", { mode: "number", unsigned: true }).notNull(),
-//     type: text("type").notNull(),
-//     size: int("size").notNull(),
-//     modified: date("modified").notNull(),
-//     starred: boolean("starred").notNull(),
-//     filename: text("filename").notNull(),
-//   },
-// (table) => {
-//   return [index("parent_index").on(table.parentId)];
-// },
-// );
+export async function handleFileUpload(fileData: {
+  name: string;
+  type: string;
+  size: number;
+  url: string;
+  userId: string;
+}) {
+  try {
+    await db.insert(files_schema).values({
+      file_id: fileData.name,
+      filename: fileData.name,
+      type: fileData.type,
+      size: fileData.size,
+      parentId: BigInt(0), // Root folder
+      url: fileData.url,
+      modified: new Date(),
+      starred: false,
+    });
+    return true;
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    throw new Error("Failed to save file data");
+  }
+}

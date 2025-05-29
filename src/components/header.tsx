@@ -2,13 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  SignedOut,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  UserButton,
-} from "@clerk/nextjs";
+import { SignedOut, SignInButton, SignedIn, UserButton } from "@clerk/nextjs";
 import { Search, Settings, HelpCircle, Cloud, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 

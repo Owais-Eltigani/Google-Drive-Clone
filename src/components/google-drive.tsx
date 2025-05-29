@@ -76,7 +76,7 @@ export const getFileIcon = (type: string) => {
   }
 };
 
-export default function GoogleDriveClone() {
+function GoogleDriveClone() {
   const [currentPath, setCurrentPath] = useState("/");
   const [currentSection, setCurrentSection] = useState<Section>("my-drive");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
